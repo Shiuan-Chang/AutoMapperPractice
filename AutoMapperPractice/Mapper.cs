@@ -8,13 +8,6 @@ using AutoMapper;
 
 namespace AutoMapperPractice
 {
-    public class UserProfile : Profile
-    {
-        public UserProfile()
-        {
-            CreateMap<Student, User>(); 
-        }
-    }
 
     public class Mapper
     {
@@ -24,7 +17,7 @@ namespace AutoMapperPractice
             {
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.AddProfile<UserProfile>(); // 直接在 Map 方法內建立映射
+                    cfg.CreateMap<TSource, TDestination>(); // 掃描所有 Profile 類別
                 });
 
                 var mapper = config.CreateMapper();
