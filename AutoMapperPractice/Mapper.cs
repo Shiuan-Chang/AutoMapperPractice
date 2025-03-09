@@ -20,21 +20,16 @@ namespace AutoMapperPractice
     {
         public static class MyMapper
         {
-            private static readonly IMapper _mapper;
-
-            static MyMapper()
+            public static TDestination Map<TDestination, TSource>(TSource source)
             {
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.AddMaps(Assembly.GetExecutingAssembly()); // 自動掃描所有 Profile 類別
+                    cfg.AddProfile<UserProfile>(); // 直接在 Map 方法內建立映射
                 });
 
-                _mapper = config.CreateMapper();
-            }
+                var mapper = config.CreateMapper();
 
-            public static TDestination Map<TDestination, TSource>(TSource source) // 泛型順序修正
-            {
-                return _mapper.Map<TDestination>(source);
+                return mapper.Map<TDestination>(source);
             }
         }
 
