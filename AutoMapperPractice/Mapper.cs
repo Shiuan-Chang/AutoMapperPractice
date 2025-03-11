@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Configuration.Conventions;
 
 namespace AutoMapperPractice
 {
@@ -13,7 +14,7 @@ namespace AutoMapperPractice
     {
         public static class MyMapper
         {
-            public static TDestination Map<TDestination, TSource>(TSource source)
+            public static TDestination Map<TDestination, TSource>(TSource source) // T是指泛型3
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -24,8 +25,20 @@ namespace AutoMapperPractice
 
                 return mapper.Map<TDestination>(source);
             }
-        }
 
+            public static TDestination Map<TDestination, TSource>(TSource source, Action<IMappingExpression<TSource, TDestination>> mappingConfig = null) 
+            {
+                var config = new MapperConfiguration(cfg =>
+                {
+                    var map = cfg.CreateMap<TSource, TDestination>();
+                    mappingConfig?.Invoke(map);
+
+                });
+
+                var mapper = config.CreateMapper();
+                return mapper.Map<TDestination>(source);
+            }      
+        }
 
         //public static Dest Map<Dest, Source>(Source source)
         //{
