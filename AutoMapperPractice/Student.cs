@@ -9,9 +9,8 @@ namespace AutoMapperPractice
 {
     public class Student
     {
-        public int Id { get; set; }
         public string Name { get; set; }
-        public int phoneNumber {  get; set; }
-
+        public int Id { get; set; }
+        public int phoneNumber { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -14,19 +15,40 @@ namespace AutoMapperPractice
     {
         public static class MyMapper
         {
-            public static TDestination Map<TDestination, TSource>(TSource source) // T是指泛型3
+
+            public static IEnumerable<TDestination> Map<TDestination, TSource>(IEnumerable<TSource> sourceList, Action<IMappingExpression<TSource, TDestination>> mappingConfig)
             {
+                // 設定 AutoMapper 配置
                 var config = new MapperConfiguration(cfg =>
                 {
-                    cfg.CreateMap<TSource, TDestination>(); // 掃描所有 Profile 類別
+                    var map = cfg.CreateMap<TSource, TDestination>();
+                    mappingConfig?.Invoke(map); // 確保 mappingConfig 不為 null
                 });
 
                 var mapper = config.CreateMapper();
 
-                return mapper.Map<TDestination>(source);
+                // 取得 sourceList 的資料
+                IEnumerable<TSource> datas = sourceList;
+
+                // 建立 List<TDestination>
+                var listOfStringType = typeof(List<>).MakeGenericType(typeof(TDestination)); // List'1 代表有一個泛型參數
+                IList listofString = (IList)Activator.CreateInstance(listOfStringType);
+
+                // 使用 foreach 逐一轉換
+                foreach (var item in datas)
+                {
+                    // 使用 AutoMapper 轉換 item
+                    var mappedValue = mapper.Map<TDestination>(item);
+
+                    // 加入結果
+                    listofString.Add(mappedValue);
+                }
+
+                return (IEnumerable<TDestination>)listofString;
             }
 
-            public static TDestination Map<TDestination, TSource>(TSource source, Action<IMappingExpression<TSource, TDestination>> mappingConfig = null) 
+
+            public static TDestination Map<TDestination, TSource>(TSource source, Action<IMappingExpression<TSource, TDestination>> mappingConfig = null)
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -34,11 +56,23 @@ namespace AutoMapperPractice
                     mappingConfig?.Invoke(map);
 
                 });
-
                 var mapper = config.CreateMapper();
                 return mapper.Map<TDestination>(source);
-            }      
-        }
+            }
+
+        //public static TDestination Map<TDestination, TSource>(TSource source) // T是指泛型3
+        //{
+        //    var config = new MapperConfiguration(cfg =>
+        //    {
+        //        cfg.CreateMap<TSource, TDestination>(); // 掃描所有 Profile 類別
+        //    });
+
+        //    var mapper = config.CreateMapper();
+
+        //    return mapper.Map<TDestination>(source);
+        //}
+
+
 
         //public static Dest Map<Dest, Source>(Source source)
         //{
@@ -54,5 +88,6 @@ namespace AutoMapperPractice
         //    IMapper mapper = config.CreateMapper(); // 建立 Mapper
         //    User result = mapper.Map<Student, User>(student); // SETUP好，就可以真正執行MAP
         //}
+    }
     }
 }
