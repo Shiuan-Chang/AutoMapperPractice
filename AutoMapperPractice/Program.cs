@@ -47,7 +47,6 @@ namespace AutoMapperPractice
 
             List<int> numbers = new List<int> { 1, 2, 3 };
 
-            // 傳入 ConvertUsing 設定
             var result = Mapper.MyMapper.Map<string, int>(numbers, map =>
             {
                 map.ConvertUsing(src => src.ToString()); // 明確轉換成字串

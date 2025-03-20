@@ -16,7 +16,7 @@ namespace AutoMapperPractice
         public static class MyMapper
         {
 
-            public static IEnumerable<TDestination> Map<TDestination, TSource>(IEnumerable<TSource> sourceList, Action<IMappingExpression<TSource, TDestination>> mappingConfig)
+            public static IEnumerable<TDestination> Map<TDestination, TSource>(IEnumerable<TSource> sourceCollection, Action<IMappingExpression<TSource, TDestination>> mappingConfig)
             {
                 // 設定 AutoMapper 配置
                 var config = new MapperConfiguration(cfg =>
@@ -27,24 +27,20 @@ namespace AutoMapperPractice
 
                 var mapper = config.CreateMapper();
 
-                // 取得 sourceList 的資料
-                IEnumerable<TSource> datas = sourceList;
+                // 轉換並保持原集合的類型
+                var mappedCollection = sourceCollection.Select(item => mapper.Map<TDestination>(item));
 
-                // 建立 List<TDestination>
-                var listOfStringType = typeof(List<>).MakeGenericType(typeof(TDestination)); // List'1 代表有一個泛型參數
-                IList listofString = (IList)Activator.CreateInstance(listOfStringType);
-
-                // 使用 foreach 逐一轉換
-                foreach (var item in datas)
+                // 嘗試轉換回與輸入相同的集合類型
+                if (sourceCollection is ICollection<TSource>)
                 {
-                    // 使用 AutoMapper 轉換 item
-                    var mappedValue = mapper.Map<TDestination>(item);
-
-                    // 加入結果
-                    listofString.Add(mappedValue);
+                    return mappedCollection.ToList(); // 若輸入是 ICollection，則回傳 List
+                }
+                if (sourceCollection is TSource[] sourceArray)
+                {
+                    return mappedCollection.ToArray(); // 若輸入是陣列，則回傳陣列
                 }
 
-                return (IEnumerable<TDestination>)listofString;
+                return mappedCollection; // 預設回傳 IEnumerable
             }
 
 
