@@ -44,6 +44,8 @@ namespace AutoMapperPractice
             //    int_arr.SetValue(i, index++);
             //}
 
+            // 因為array是「連續」的記憶體，所以他在「分配」大小的時候，初始化就必須要給予，這也是為什麼上週上課我會給你兩種寫法 (array ,list)
+
 
             List<int> numbers = new List<int> { 1, 2, 3 };
 

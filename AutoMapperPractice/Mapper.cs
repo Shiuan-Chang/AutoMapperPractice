@@ -15,7 +15,6 @@ namespace AutoMapperPractice
     {
         public static class MyMapper
         {
-
             public static IEnumerable<TDestination> Map<TDestination, TSource>(IEnumerable<TSource> sourceCollection, Action<IMappingExpression<TSource, TDestination>> mappingConfig)
             {
                 // 設定 AutoMapper 配置
@@ -31,13 +30,13 @@ namespace AutoMapperPractice
                 var mappedCollection = sourceCollection.Select(item => mapper.Map<TDestination>(item));
 
                 // 嘗試轉換回與輸入相同的集合類型
-                if (sourceCollection is ICollection<TSource>)
-                {
-                    return mappedCollection.ToList(); // 若輸入是 ICollection，則回傳 List
-                }
                 if (sourceCollection is TSource[] sourceArray)
                 {
                     return mappedCollection.ToArray(); // 若輸入是陣列，則回傳陣列
+                }
+                if (sourceCollection is ICollection<TSource>)
+                {
+                    return mappedCollection.ToList(); // 若輸入是 ICollection，則回傳 List
                 }
 
                 return mappedCollection; // 預設回傳 IEnumerable
